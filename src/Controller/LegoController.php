@@ -37,4 +37,20 @@ class LegoController extends AbstractController
           'legos' => $this->legos,
           ]);
      } 
+
+     #[Route('/{collection}', 'filter_by_collection')]
+     public function filter($collection): Response
+{
+    foreach ($this->legos as $lego) {
+        if ($lego->getCollection() == $collection) {
+            $legos[] = $lego;
+
+            return $this->render('lego.html.twig', [
+                'legos' => $legos,
+            ]);
+        }
+    }
+}
+
+
 }
