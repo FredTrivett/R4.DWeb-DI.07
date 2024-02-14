@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Lego;
 use App\Service\CreditsGenerator;
+use App\Service\DatabaseInterface;
 
 class LegoController extends AbstractController
 {
@@ -16,7 +17,12 @@ class LegoController extends AbstractController
         
    public function __construct()
    {
-        $data = file_get_contents(__DIR__ . '/../data.json');
+        // $data = file_get_contents(__DIR__ . '/../data.json');
+        // use DatabaseInterface to get the legos
+        $db = new DatabaseInterface();
+        $data = $db->getAllLegos();
+        // turn data into a string 
+        $data = json_encode($data);
         $legoData = json_decode($data, true);
  
         $this->legos = [];
@@ -25,8 +31,8 @@ class LegoController extends AbstractController
           $lego->setDescription($legoItem['description']);
           $lego->setPrice($legoItem['price']);
           $lego->setPieces($legoItem['pieces']);
-          $lego->setBoxImage($legoItem['images']['box']);
-          $lego->setLegoImage($legoItem['images']['bg']);
+        //   $lego->setBoxImage($legoItem['images']['box']);
+        //   $lego->setLegoImage($legoItem['images']['bg']);
           $this->legos[] = $lego;
         }
    }
@@ -75,7 +81,7 @@ class LegoController extends AbstractController
     //     ]);
     // }
 
-    #[Route('/{collection}', 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert'])]
+    #[Route('/{collection}', 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert|harry_potter'])]
     public function filter($collection): Response
     {
         $filter = array_filter($this->legos, function($legoItem) use ($collection) {
