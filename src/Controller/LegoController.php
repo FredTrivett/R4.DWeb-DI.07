@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Lego;
 use App\Service\CreditsGenerator;
 use App\Service\DatabaseInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 class LegoController extends AbstractController
 {
@@ -44,6 +45,26 @@ class LegoController extends AbstractController
           'legos' => $this->legos,
           ]);
      } 
+
+     #[Route('/test')]
+    public function test(EntityManagerInterface $entityManager): Response
+    {
+
+        $l = new Lego(1234);
+        $l->setName("un beau Lego");
+        $l->setCollection("Lego espace");
+        $l->setDescription("Un superbe Lego de l'espace");
+        $l->setPrice(99.99);
+        $l->setPieces(1000);
+        $l->setBoxImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
+        $l->setLegoImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
+
+        $entityManager->persist($l);
+        $entityManager->flush();
+
+        return new Response('Saved new product with id '.$l->getId());
+    }
+
 
     // #[Route('/creator')]
     // public function creator(): Response

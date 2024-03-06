@@ -1,88 +1,137 @@
-<?php 
+<?php
 
-    namespace App\Entity;
+namespace App\Entity;
 
-    class Lego {
-        private $collection;
-        private $id;
-        private $name;
-        private $description;
-        private $price;
-        private $pieces;
-        private $boxImage;
-        private $legoImage;
+use App\Repository\LegoRepository;
+use Doctrine\ORM\Mapping as ORM;
 
-        public function __construct($collection, $id, $name) {
-            $this->collection = $collection;
-            $this->id = $id;
-            $this->name = $name;
-        }
+#[ORM\Entity(repositoryClass: LegoRepository::class)]
+class Lego
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-        // Getters
-        public function getCollection(): string {
-            return $this->collection;
-        }
+    #[ORM\Column(length: 255)]
+    private ?string $collection = null;
 
-        public function getId(): int {
-            return $this->id;
-        }
+    #[ORM\Column(length: 50)]
+    private ?string $name = null;
 
-        public function getName(): string {
-            return $this->name;
-        }
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
 
-        public function getDescription(): string {
-            return $this->description;
-        }
+    #[ORM\Column]
+    private ?float $price = null;
 
-        public function getPrice(): float {
-            return $this->price;
-        }
+    #[ORM\Column]
+    private ?int $pieces = null;
 
-        public function getPieces(): int {
-            return $this->pieces;
-        }
+    #[ORM\Column(length: 255)]
+    private ?string $boxImage = null;
 
-        public function getBoxImage(): string {
-            return $this->boxImage;
-        }
+    #[ORM\Column(length: 255)]
+    private ?string $legoImage = null;
 
-        public function getLegoImage(): string {
-            return $this->legoImage;
-        }
+    // public function __construct (int $id)
+    // {
+    //     $this->id = $id;
+    // }
 
-        // Setters
-
-        public function setCollection(string $collection) {
-            $this->collection = $collection;
-        }
-
-        public function setId(int $id) {
-            $this->id = $id;
-        }
-
-        public function setName(string $name) {
-            $this->name = $name;
-        }
-
-        public function setDescription(string $description) {
-            $this->description = $description;
-        }
-
-        public function setPrice(float $price) {
-            $this->price = $price;
-        }
-
-        public function setPieces(int $pieces) {
-            $this->pieces = $pieces;
-        }
-
-        public function setBoxImage(string $boxImage) {
-            $this->boxImage = $boxImage;
-        }
-
-        public function setLegoImage(string $legoImage) {
-            $this->legoImage = $legoImage;
-        }
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
+    public function getCollection(): ?string
+    {
+        return $this->collection;
+    }
+
+    public function setCollection(string $collection): static
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): static
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getPieces(): ?int
+    {
+        return $this->pieces;
+    }
+
+    public function setPieces(int $pieces): static
+    {
+        $this->pieces = $pieces;
+
+        return $this;
+    }
+
+    public function getBoxImage(): ?string
+    {
+        return $this->boxImage;
+    }
+
+    public function setBoxImage(string $boxImage): static
+    {
+        $this->boxImage = $boxImage;
+
+        return $this;
+    }
+
+    public function getLegoImage(): ?string
+    {
+        return $this->legoImage;
+    }
+
+    public function setLegoImage(string $legoImage): static
+    {
+        $this->legoImage = $legoImage;
+
+        return $this;
+    }
+}
