@@ -8,65 +8,74 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Lego;
+use App\Repository\LegoRepository;
 use App\Service\CreditsGenerator;
-use App\Service\DatabaseInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LegoController extends AbstractController
 {
    private $legos;
         
-   public function __construct()
+   public function __construct(LegoRepository $legoRepository)
    {
-        // $data = file_get_contents(__DIR__ . '/../data.json');
-        // use DatabaseInterface to get the legos
-        $db = new DatabaseInterface();
-        $data = $db->getAllLegos();
-        // turn data into a string 
-        $data = json_encode($data);
-        $legoData = json_decode($data, true);
- 
-        $this->legos = [];
-        foreach ($legoData as $legoItem) {
-          $lego = new Lego($legoItem['collection'], $legoItem['id'], $legoItem['name']); // Create a new Lego object
-          $lego->setDescription($legoItem['description']);
-          $lego->setPrice($legoItem['price']);
-          $lego->setPieces($legoItem['pieces']);
-        //   $lego->setBoxImage($legoItem['images']['box']);
-        //   $lego->setLegoImage($legoItem['images']['bg']);
-          $this->legos[] = $lego;
-        }
+       $this->legos = $legoRepository;
    }
 
    #[Route('/' )]
      public function home(): Response
-     {
-          return $this->render('lego.html.twig', [
-          'legos' => $this->legos,
-          ]);
+     {  
+        $legos = $this->legos->findAll();
+        return $this->render('lego.html.twig', [
+            'legos' => $legos,
+        ]);
+
+        
      } 
+     #[Route('/{collection}', name: 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert'])]
+     public function filter(string $collection): Response
+     {
+         $legos = $this->legos->findAll(); // Récupère tous les objets Lego
+         $collectionFormatted = ucwords(str_replace('_', ' ', $collection)); // Formate le nom de la collection
+     
+         // Filtre les objets Lego par collection
+         $filteredLegos = array_filter($legos, function ($lego) use ($collectionFormatted) {
+             return $lego->getCollection() === $collectionFormatted;
+         });
+     
+         return $this->render('lego.html.twig', [
+             'legos' => $filteredLegos,
+         ]);
+     }
+     
 
-     #[Route('/test')]
-    public function test(EntityManagerInterface $entityManager): Response
+    #[Route('/credits', 'credits')]
+    public function credits(CreditsGenerator $credits): Response
     {
-
-        $l = new Lego(1234);
-        $l->setName("un beau Lego");
-        $l->setCollection("Lego espace");
-        $l->setDescription("Un superbe Lego de l'espace");
-        $l->setPrice(99.99);
-        $l->setPieces(1000);
-        $l->setBoxImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
-        $l->setLegoImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
-
-        $entityManager->persist($l);
-        $entityManager->flush();
-
-        return new Response('Saved new product with id '.$l->getId());
+        return new Response($credits->getCredits());
     }
+}
 
 
-    // #[Route('/creator')]
+     //  #[Route('/test')]
+    // public function test(EntityManagerInterface $entityManager): Response
+    // {
+
+    //     $l = new Lego(1234);
+    //     $l->setName("un beau Lego");
+    //     $l->setCollection("Lego espace");
+    //     $l->setDescription("Un superbe Lego de l'espace");
+    //     $l->setPrice(99.99);
+    //     $l->setPieces(1000);
+    //     $l->setBoxImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
+    //     $l->setLegoImage("https://www.lego.com/cdn/cs/set/assets/blt3e3f3d2d3d3d3d3d/LEGO-STAR-WARS-AT-AT-75313-BOX-01-SQ.png?fit=bounds&format=webply&quality=80&width=1600&height=1600&dpr=1");
+
+    //     $entityManager->persist($l);
+    //     $entityManager->flush();
+
+    //     return new Response('Saved new product with id '.$l->getId());
+    // }
+
+        // #[Route('/creator')]
     // public function creator(): Response
     // {
     //     // only shoe the templates where $legoItem['collection'] == 'Creator'
@@ -101,23 +110,3 @@ class LegoController extends AbstractController
     //         'legos' => $creator_expert,
     //     ]);
     // }
-
-    #[Route('/{collection}', 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert|harry_potter'])]
-    public function filter($collection): Response
-    {
-        $filter = array_filter($this->legos, function($legoItem) use ($collection) {
-            $collection = ucwords(str_replace('_', ' ', $collection));
-            return $legoItem->getCollection() == $collection;
-        });
-        return $this->render('lego.html.twig', [
-            'legos' => $filter,
-        ]);
-    }
-
-    #[Route('/credits', 'credits')]
-    public function credits(CreditsGenerator $credits): Response
-    {
-        return new Response($credits->getCredits());
-    }
-
-}

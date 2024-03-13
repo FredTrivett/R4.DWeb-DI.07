@@ -13,13 +13,10 @@ class Lego
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $collection = null;
-
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 2555)]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -34,6 +31,10 @@ class Lego
     #[ORM\Column(length: 255)]
     private ?string $legoImage = null;
 
+    #[ORM\ManyToOne(inversedBy: 'category')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?LegoCollection $category = null;
+
     // public function __construct (int $id)
     // {
     //     $this->id = $id;
@@ -42,18 +43,6 @@ class Lego
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCollection(): ?string
-    {
-        return $this->collection;
-    }
-
-    public function setCollection(string $collection): static
-    {
-        $this->collection = $collection;
-
-        return $this;
     }
 
     public function setId(int $id): static
@@ -131,6 +120,18 @@ class Lego
     public function setLegoImage(string $legoImage): static
     {
         $this->legoImage = $legoImage;
+
+        return $this;
+    }
+
+    public function getCategory(): ?LegoCollection
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?LegoCollection $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

@@ -52,7 +52,6 @@ class PopulateDatabaseCommand extends Command
         foreach ($legoData as $item) {
             $lego = new Lego();
             $lego->setName($item['name']);
-            $lego->setCollection($item['collection']);
             $lego->setDescription($item['description']);
             $lego->setPrice($item['price']);
             $lego->setPieces($item['pieces']);
@@ -70,3 +69,41 @@ class PopulateDatabaseCommand extends Command
 }
 
 // php bin/console app:populate-database src/data/data.json
+
+// #[AsCommand(
+//     name: 'app:populate-database',
+//     description: 'Add a short description for your command',
+// )]
+// class PopulateDatabaseCommand extends Command
+// {
+//     public function __construct()
+//     {
+//         parent::__construct();
+//     }
+
+//     protected function configure(): void
+//     {
+//         $this
+//             ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+//             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+//         ;
+//     }
+
+//     protected function execute(InputInterface $input, OutputInterface $output): int
+//     {
+//         $io = new SymfonyStyle($input, $output);
+//         $arg1 = $input->getArgument('arg1');
+
+//         if ($arg1) {
+//             $io->note(sprintf('You passed an argument: %s', $arg1));
+//         }
+
+//         if ($input->getOption('option1')) {
+//             // ...
+//         }
+
+//         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+
+//         return Command::SUCCESS;
+//     }
+// }

@@ -21,6 +21,7 @@ class LegoRepository extends ServiceEntityRepository
         parent::__construct($registry, Lego::class);
     }
 
+    
     //    /**
     //     * @return Lego[] Returns an array of Lego objects
     //     */
