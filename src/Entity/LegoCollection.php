@@ -18,12 +18,12 @@ class LegoCollection
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(targetEntity: Lego::class, mappedBy: 'category')]
-    private Collection $category;
+    #[ORM\OneToMany(targetEntity: Lego::class, mappedBy: 'collection')]
+    private Collection $legos;
 
     public function __construct()
     {
-        $this->category = new ArrayCollection();
+        $this->legos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -46,27 +46,27 @@ class LegoCollection
     /**
      * @return Collection<int, Lego>
      */
-    public function getCategory(): Collection
+    public function getLegos(): Collection
     {
-        return $this->category;
+        return $this->legos;
     }
 
-    public function addCategory(Lego $category): static
+    public function addLego(Lego $lego): static
     {
-        if (!$this->category->contains($category)) {
-            $this->category->add($category);
-            $category->setCategory($this);
+        if (!$this->legos->contains($lego)) {
+            $this->legos->add($lego);
+            $lego->setCollection($this);
         }
 
         return $this;
     }
 
-    public function removeCategory(Lego $category): static
+    public function removeLego(Lego $lego): static
     {
-        if ($this->category->removeElement($category)) {
+        if ($this->legos->removeElement($lego)) {
             // set the owning side to null (unless already changed)
-            if ($category->getCategory() === $this) {
-                $category->setCategory(null);
+            if ($lego->getCollection() === $this) {
+                $lego->setCollection(null);
             }
         }
 

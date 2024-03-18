@@ -11,6 +11,9 @@ use App\Entity\Lego;
 use App\Repository\LegoRepository;
 use App\Service\CreditsGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\LegoCollectionRepository;
+use App\Entity\LegoCollection;
+
 
 class LegoController extends AbstractController
 {
@@ -21,32 +24,53 @@ class LegoController extends AbstractController
        $this->legos = $legoRepository;
    }
 
-   #[Route('/' )]
-     public function home(): Response
-     {  
-        $legos = $this->legos->findAll();
-        return $this->render('lego.html.twig', [
-            'legos' => $legos,
-        ]);
+//    #[Route('/' )]
+//      public function home(): Response
+//      {  
+//         $legos = $this->legos->findAll();
+//         return $this->render('lego.html.twig', [
+//             'legos' => $legos,
+//         ]);
 
         
-     } 
-     #[Route('/{collection}', name: 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert'])]
-     public function filter(string $collection): Response
-     {
-         $legos = $this->legos->findAll(); // Récupère tous les objets Lego
-         $collectionFormatted = ucwords(str_replace('_', ' ', $collection)); // Formate le nom de la collection
-     
-         // Filtre les objets Lego par collection
-         $filteredLegos = array_filter($legos, function ($lego) use ($collectionFormatted) {
-             return $lego->getCollection() === $collectionFormatted;
-         });
-     
-         return $this->render('lego.html.twig', [
-             'legos' => $filteredLegos,
-         ]);
-     }
-     
+//      } 
+
+
+// Exemple de méthode home ajustée
+#[Route('/', name: 'home')]
+public function home(LegoCollectionRepository $collectionRepository): Response
+{  
+    $legos = $this->legos->findAll();
+    $collections = $collectionRepository->findAll(); // Récupère toutes les collections
+
+    return $this->render('lego.html.twig', [
+        'legos' => $legos,
+        'collections' => $collections, // Passe les collections au template
+    ]);
+}
+
+    #[Route('/{name}', name: 'collection')]
+    public function collection(LegoCollection $collection, LegoCollectionRepository $collectionRepository): Response
+    {
+        $legos = $collection->getLegos(); // Récupère tous les legos de la collection
+        $collections = $collectionRepository->findAll(); // Récupère toutes les collections
+
+
+        return $this->render('lego.html.twig', [
+            'legos' => $legos,
+            'collections' => $collections,
+        ]);
+    }
+    //  #[Route('/{name}', name: 'collection')]
+    //  public function collection(LegoCollection $collection): Response
+    //  {
+    //      $legos = $this->legos->findBy(['category' => $collection]);
+
+    //         return $this->render('lego.html.twig', [
+    //             'legos' => $legos,
+    //         ]);
+    //  }
+
 
     #[Route('/credits', 'credits')]
     public function credits(CreditsGenerator $credits): Response
@@ -54,6 +78,22 @@ class LegoController extends AbstractController
         return new Response($credits->getCredits());
     }
 }
+
+    //  #[Route('/{collection}', name: 'filter_by_collection', requirements: ['collection' => 'creator|star_wars|creator_expert'])]
+    //  public function filter(string $collection): Response
+    //  {
+    //      $legos = $this->legos->findAll(); // Récupère tous les objets Lego
+    //      $collectionFormatted = ucwords(str_replace('_', ' ', $collection)); // Formate le nom de la collection
+     
+    //      // Filtre les objets Lego par collection
+    //      $filteredLegos = array_filter($legos, function ($lego) use ($collectionFormatted) {
+    //          return $lego->getCollection() === $collectionFormatted;
+    //      });
+     
+    //      return $this->render('lego.html.twig', [
+    //          'legos' => $filteredLegos,
+    //      ]);
+    //  }
 
 
      //  #[Route('/test')]
